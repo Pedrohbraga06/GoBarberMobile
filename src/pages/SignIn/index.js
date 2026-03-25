@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 
-import { Image } from 'react-native';
+import { Image, Alert } from 'react-native';
 
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -28,6 +28,16 @@ export default function SignIn({ navigation }) {
   const [password, setPassword] = useState('');
 
   function handleSubmit() {
+    if (!email || !password) {
+      Alert.alert('Atenção', 'Por favor, preenchimento e-mail e senha');
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      Alert.alert('Atenção', 'Digite um e-mail válido');
+      return;
+    }
+
     dispatch(signInRequest(email, password));
   }
 
@@ -47,6 +57,7 @@ export default function SignIn({ navigation }) {
             onSubmitEditing={() => passwordRef.current.focus()}
             value={email}
             onChangeText={setEmail}
+            editable={!loading}
           />
           <FormInput
             icon="lock-outline"
@@ -57,14 +68,17 @@ export default function SignIn({ navigation }) {
             onSubmitEditing={handleSubmit}
             value={password}
             onChangeText={setPassword}
+            editable={!loading}
           />
 
           <SubmitButton loading={loading} onPress={handleSubmit}>
             Acessar
           </SubmitButton>
         </Form>
-        <SignLink onPress={() => navigation.navigate('SignUp')}>
-          <SignLinkText>Criar conta Gratuita</SignLinkText>
+        <SignLink
+          onPress={() => navigation.navigate('SignUp')}
+          disabled={loading}>
+          <SignLinkText>Criar conta gratuita</SignLinkText>
         </SignLink>
       </Container>
     </Background>
